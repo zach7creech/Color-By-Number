@@ -3,17 +3,10 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
+#include <cmath>
 
 using namespace std;
-
-class Pixel
-{
-    public:
-        int R, G, B;
-        string dom_color;
-        void find_dominant_color();
-};
 
 class Color
 {
@@ -23,13 +16,34 @@ class Color
         Color(int r=0, int g=0, int b=0, string hex="", string name="");
 };
 
+class Pixel
+{
+    public:
+        int R, G, B;
+        string domColor;
+        Color *closestColor;
+        void findDominant();
+        bool multiColor();
+        bool operator==(const Pixel &p) const;
+};
+
+class PixelHash
+{
+    public:
+        size_t operator()(const Pixel &p) const;
+};
+
 class ColorVectors
 {
     public:
         vector<Color *> red, blue, green, gray;
+        unordered_map<Pixel, Color *, PixelHash> uniquePixs;
+        unordered_map<Pixel, Color *, PixelHash>::iterator mitr;
         void readColors(string option);
         void closestColor(Pixel *pixel);
 };
+
+int findSimilarity(Pixel *pixel, Color *color);
 
 int main(int argc, char** argv)
 {  
@@ -38,7 +52,7 @@ int main(int argc, char** argv)
     vector<Pixel *> row;
     string P3;
     int width, height, intensity;
-    Pixel *pixel = new Pixel;
+    Pixel *pixel;
 
     cv.readColors(argv[1]);
 
@@ -49,26 +63,28 @@ int main(int argc, char** argv)
         image.push_back(row);
         for(int j = 0; j < width; j++)
         {
-            cin >> pixel->R >> pixel->G >> pixel->B;
-            pixel->find_dominant_color();
-            image[i].push_back(pixel);
             pixel = new Pixel;
+            cin >> pixel->R >> pixel->G >> pixel->B;
+            cv.closestColor(pixel);
+            image[i].push_back(pixel);
         }
     }
+    
+    /*Color *print;
+
+    cout << P3 << '\n' << width << ' ' << height << '\n' << intensity << '\n';
+
+    for(int i = 0; i < height; i++)
+    {
+        for(int j = 0; j < width; j++)
+        {
+            print = image[i][j]->closestColor;
+            cout << print->R << ' ' << print->G << ' ' << print->B << ' ';
+        }
+        cout << '\n';
+    }*/
 
     return 0;
-}
-
-void Pixel::find_dominant_color()
-{
-    if(R > G && R > B)
-        dom_color = "red";
-    else if(G > R && G > B)
-        dom_color = "green";
-    else if(B > R && B > G)
-        dom_color = "blue";
-    else 
-        dom_color = "none"; //unlikely case that there is no dominant color
 }
 
 Color::Color(int r, int g, int b, string hex, string name)
@@ -78,6 +94,64 @@ Color::Color(int r, int g, int b, string hex, string name)
     B = b;
     this->hex = hex;
     this->name = name;
+}
+
+void Pixel::findDominant()
+{
+    if(!multiColor())
+    {
+        if(R > G && R > B)
+            domColor = "red";
+        else if(G > R && G > B)
+            domColor = "green";
+        else if(B > R && B > G)
+            domColor = "blue";
+    }
+}
+
+bool Pixel::multiColor()
+{
+    if(abs(R - G) < 3 && abs(R - B) < 3)
+    {    
+        domColor = "gray";
+        return true;
+    }
+    else if(R == G)
+    {
+        domColor = "red/green";
+        return true;
+    }
+    else if(R == B)
+    {
+        domColor = "red/blue";
+        return true;
+    }
+    else if(G == B)
+    {
+        domColor = "green/blue";
+        return true;
+    }
+
+    return false;
+}
+
+bool Pixel::operator==(const Pixel &p) const
+{
+    if(this->R == p.R && this->G == p.G && this->B == p.B)
+        return true;
+    else
+        return false;
+}
+
+size_t PixelHash::operator()(const Pixel &p) const
+{
+    string r, g, b;
+
+    r = to_string(p.R);
+    g = to_string(p.G);
+    b = to_string(p.B);
+
+    return stoi(r + g + b);
 }
 
 void ColorVectors::readColors(string option)
@@ -162,32 +236,80 @@ void ColorVectors::readColors(string option)
             else if(category == 'g')
                 gray.push_back(color);
         }
-
-        /*for(int i = 0; i < red.size(); i++)
-        {
-            cout << red[i]->R << ' ' << red[i]->G << ' ' << red[i]->B << ' ' << red[i]->hex << ' ' << red[i]->name << '\n';
-        }
-
-        for(int i = 0; i < green.size(); i++)
-        {
-            cout << green[i]->R << ' ' << green[i]->G << ' ' << green[i]->B << ' ' << green[i]->hex << ' ' << green[i]->name << '\n';
-        }
-
-        for(int i = 0; i < blue.size(); i++)
-        {
-            cout << blue[i]->R << ' ' << blue[i]->G << ' ' << blue[i]->B << ' ' << blue[i]->hex << ' ' << blue[i]->name << '\n';
-        }
-
-        for(int i = 0; i < gray.size(); i++)
-        {
-            cout << gray[i]->R << ' ' << gray[i]->G << ' ' << gray[i]->B << ' ' << gray[i]->hex << ' ' << gray[i]->name << '\n';
-        }*/
     }
 
     fin.close();
 }
 
-void ColorVectors::closestColor(Pixel *)
+void ColorVectors::closestColor(Pixel *pixel)
 {
+    int lowestDiff, thisDiff;
 
+    lowestDiff = 766; //biggest possible difference (255 + 255 + 255 + 1)
+
+    pixel->findDominant();
+
+    mitr = uniquePixs.find(*pixel);
+    
+    if(mitr != uniquePixs.end())
+    {
+        pixel->closestColor = mitr->second;
+        return;
+    }
+
+    if(pixel->domColor == "red" || pixel->domColor == "red/green" || pixel->domColor == "red/blue")
+    {
+        for(int i = 0; i < red.size(); i++)
+        {
+            thisDiff = findSimilarity(pixel, red[i]);
+            if(thisDiff < lowestDiff)
+            {
+                lowestDiff = thisDiff;
+                pixel->closestColor = red[i];
+            }
+        }
+    }
+    if(pixel->domColor == "green" || pixel->domColor == "red/green" || pixel->domColor == "green/blue")
+    {
+        for(int i = 0; i < green.size(); i++)
+        {
+            thisDiff = findSimilarity(pixel, green[i]);
+            if(thisDiff < lowestDiff)
+            {
+                lowestDiff = thisDiff;
+                pixel->closestColor = green[i];
+            }
+        }
+    }
+    if(pixel->domColor == "blue" || pixel->domColor == "red/blue" || pixel->domColor == "green/blue")
+    {
+        for(int i = 0; i < blue.size(); i++)
+        {
+            thisDiff = findSimilarity(pixel, blue[i]);
+            if(thisDiff < lowestDiff)
+            {
+                lowestDiff = thisDiff;
+                pixel->closestColor = blue[i];
+            }
+        }
+    }
+    if(pixel->domColor == "gray")
+    {
+        for(int i = 0; i < gray.size(); i++)
+        {
+            thisDiff = findSimilarity(pixel, gray[i]);
+            if(thisDiff < lowestDiff)
+            {
+                lowestDiff = thisDiff;
+                pixel->closestColor = gray[i];
+            }
+        }
+    }
+
+    uniquePixs[*pixel] = pixel->closestColor;
+}
+
+int findSimilarity(Pixel *pixel, Color *color)
+{
+    return abs(pixel->R - color->R) + abs(pixel->G - color->G) + abs(pixel->B - color->B);
 }
