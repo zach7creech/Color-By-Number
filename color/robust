@@ -1,2 +1,286 @@
-// red
-203 153 201 Pastel
+//red
+132 132 130 #848482 Battleship Gray
+255 0   255 #FF00FF Magenta
+203 153 201 #CB99C9 Pastel Violet
+189 51  164 #BD33A4 Byzantine
+142 69  133 #8E4585 Plum
+139 0   139 #8B008B Dark Magenta
+112 41  99  #702963 Byzantium
+93  57  84  #5D3954 Dark Byzantium
+255 240 245 #FFF0F5 Lavender Blush
+251 204 231 #FBCCE7 Classic Rose
+244 154 194 #F49AC2 Pastel Magenta
+207 113 175 #CF71AF Sky Magenta
+255 0   127 #FF007F Bright Pink
+135 38  87  #872657 Dark Raspberry
+97  64  81  #614051 Eggplant
+255 209 220 #FFD1DC Pastel Pink
+255 192 203 #FFC0CB Pink
+255 183 197 #FFB7C5 Cherry Blossom Pink
+252 142 172 #FC8EAC Flamingo Pink
+231 84  128 #E75480 Dark Pink
+222 93  131 #DE5D83 Blush
+222 49  99  #DE3163 Cherry
+227 11  93  #E30B5D Raspberry
+224 17  95  #E0115F Ruby
+195 33  72  #C32148 Bright Maroon
+128 0   32  #800020 Burgundy
+86  3   25  #560319 Dark Scarlet
+255 193 204 #FFC1CC Bubble Gum
+229 43  80  #E52B50 Amaranth
+204 78  92  #CC4E5C Dark Terra Cotta
+152 119 123 #98777B Bazaar
+227 38  54  #E32636 Alizarin
+220 20  60  #DC143C Crimson
+227 0   34  #E30022 Cadmium Red
+196 30  58  #C41E3A Cardinal
+137 63  69  #893F45 Cordovan
+150 0   24  #960018 Carmine
+101 0   11  #65000B Rosewood
+255 250 250 #FFFAFA Snow
+244 194 194 #F4C2C2 Baby Pink
+255 105 97  #FF6961 Pastel Red
+255 92  92  #FF5C5C Indian Red
+255 28  0   #FF1C00 Ferrari Red
+255 8   0   #FF0800 Candy Apple Red
+255 0   0   #FF0000 Red
+205 92  92  #CD5C5C Chestnut
+227 66  52  #E34234 Cinnabar
+215 59  62  #D73B3E Jasper
+206 22  32  #CE1620 Fire Engine Red
+204 0   0   #CC0000 Boston University Red
+178 34  34  #B22222 Firebrick
+179 27  27  #B31B1B Cornell Red
+164 0   0   #A40000 Dark Candy Apple Red
+128 0   0   #800000 Maroon
+112 28  28  #701C1C Prune
+60  20  20  #3C1414 Dark Sienna
+50  20  20  #321414 Seal Brown
+255 153 102 #FF9966 Atomic Tangerine
+255 140 105 #FF8C69 Salmon
+233 150 122 #E9967A Dark Salmon
+255 127 80  #FF7F50 Coral
+233 116 81  #E97451 Burnt Sienna
+255 90  54  #FF5A36 Portland Orange
+226 114 91  #E2725B Terra Cotta
+255 56  0   #FF3800 Coquelicot
+226 88  34  #E25822 Flame
+152 129 123 #98817B Cinereous
+205 91  69  #CD5B45 Dark Coral
+152 105 96  #986960 Dark Chestnut
+203 65  11  #CB410B Sinopia
+194 59  34  #C23B22 Dark Pastel Red
+192 64  0   #C04000 Mahogany
+183 65  14  #B7410E Rust
+121 68  59  #79443B Bole
+138 51  36  #8A3324 Burnt Umber
+109 53  26  #6D351A Auburn
+255 245 238 #FFF5EE Seashell
+247 231 206 #F7E7CE Champagne
+255 229 180 #FFE5B4 Peach
+245 222 179 #F5DEB3 Wheat
+250 214 165 #FAD6A5 Sunset
+251 206 177 #FBCEB1 Apricot
+237 201 175 #EDC9AF Desert Sand
+255 179 71  #FFB347 Pastel Orange
+222 184 135 #DEB887 Burlywood
+255 168 18  #FFA812 Dark Tangerine
+255 167 0   #FFA700 Chrome Yellow
+229 170 112 #E5AA70 Fawn
+225 169 95  #E1A95F Earth Yellow
+227 168 87  #E3A857 Indian Yellow
+195 176 145 #C3B091 Khaki
+255 140 0   #FF8C00 Dark Orange
+228 155 15  #E49B0F Gamboge
+237 145 33  #ED9121 Carrot Orange
+255 127 0   #FF7F00 Orange
+242 133 0   #F28500 Tangerine
+237 135 45  #ED872D Cadmium Orange
+255 117 24  #FF7518 Pumpkin
+193 154 107 #C19A6B Desert
+255 103 0   #FF6700 Safety Orange
+205 127 50  #CD7F32 Bronze
+204 119 34  #CC7722 Ochre
+210 105 30  #D2691E Cinnamon
+184 115 51  #B87333 Copper
+160 120 90  #A0785A Chamoisee
+204 85  0   #CC5500 Burnt Orange
+138 121 93  #8A795D Shadow
+153 101 21  #996515 Golden Brown
+131 105 83  #836953 Pastel Brown
+130 102 68  #826644 Raw Umber
+150 75  0   #964B00 Brown
+123 63  0   #7B3F00 Chocolate
+112 66  20  #704214 Sepia
+101 67  33  #654321 Dark Brown
+72  60  50  #483C32 Dark Lava
+61  43  31  #3D2B1F Bistre
+255 248 220 #FFF8DC Cornsilk
+250 240 190 #FAF0BE Blond
+240 234 214 #F0EAD6 Pearl
+229 228 226 #E5E4E2 Platinum //also gray
+243 229 171 #F3E5AB Vanilla
+255 219 88  #FFDB58 Mustard
+240 220 130 #F0DC82 Buff
+255 209 42  #FFD12A Banana Yellow
+233 214 107 #E9D66B Arylide Yellow
+244 196 48  #F4C430 Saffron
+255 191 0   #FFBF00 Amber
+194 178 128 #C2B280 Sand
+218 165 32  #DAA520 Goldenrod
+184 134 11  #B8860B Dark Goldenrod
+145 129 81  #918151 Dark Tan
+150 113 23  #967117 Sand Dune
+255 255 240 #FFFFF0 Ivory
+255 253 208 #FFFDD0 Cream
+253 253 150 #FDFD96 Pastel Yellow
+245 245 220 #F5F5DC Beige
+255 255 49  #FFFF31 Daffodil
+255 255 0   #FFFF00 Yellow
+252 247 94  #FCF75E Icterine
+255 247 0   #FFF700 Lemon
+255 239 0   #FFEF00 Canary Yellow
+247 233 142 #F&E98E Flavescent
+251 236 93  #FBEC5D Corn
+255 223 0   #FFDF00 Golden Yellow
+238 230 0   #EEE600 Titanium Yellow
+240 225 48  #F0E130 Dandelion
+230 226 0   #E6E200 Peridot
+228 217 111 #E4D96F Straw
+236 213 64  #ECD540 Sandstorm
+207 207 196 #CFCFC4 Pastel Gray
+228 208 10  #E4D00A Citrine
+189 183 107 #BDB76B Dark Khaki
+181 166 66  #B5A642 Brass
+128 128 0   #808000 Olive
+//green
+255 255 240 #FFFFF0 Ivory
+253 253 208 #FDFD96 Pastel Yellow
+245 245 220 #F5F5DC Beige
+255 255 49  #FFFF31 Daffodil
+255 255 0   #FFFF00 Yellow
+207 207 196 #CFCFC4 Pastel Gray
+223 255 0   #DFFF00 Chartreuse
+191 255 0   #BFFF00 Lime
+167 252 0   #A7FC00 Spring Bud
+209 226 49  #D1E231 Pear
+164 198 57  #A4C639 Android Green
+141 182 0   #8DB600 Apple Green
+132 132 130 #848482 Battleship Grey //also gray
+128 128 0   #808000 Olive
+75  83  32  #4B5320 Army Green
+178 236 93  #B2EC5D Inchworm
+124 252 0   #7CFC00 Lawn Green
+102 255 0   #66FF00 Bright Green
+172 225 175 #ACE1AF Celadon
+119 221 119 #77DD77 Pastel Green
+147 197 114 #93C572 Pistachio
+133 187 101 #85BB65 Dollar Bill
+135 169 107 #87A96B Asparagus
+3   192 60  #03C03C Dark Pastel Green
+120 134 107 #78866B Camouflage Green
+19  136 8   #138808 India Green
+0   128 0   #008000 Green
+85  107 47  #556B2F Dark Olive Green
+65  72  51  #414833 Rifle Green
+127 255 212 #7FFFD4 Aquamarine
+0   255 111 #00FF6F Clover
+178 190 181 #B2BEB5 Ash Gray
+163 193 173 #A3C1AD Cambridge Blue
+0   204 153 #00CC99 Caribbean Green
+80  200 120 #50C878 Emerald
+62  180 137 #3EB489 Mint
+3   192 60  #03C03C Dark Pastel Green
+0   168 107 #00A86B Jade
+115 134 120 #738678 Xanadu
+0   117 94  #00755E Tropical Rain Forest
+23  114 69  #177245 Dark Spring Green
+0   107 60  #006B3C Cadmium Green
+1   68  33  #014421 Forest Green
+0   66  37  #004225 British Racing Green
+1   50  32  #013220 Dark Green
+26  36  33  #1A2421 Dark Jungle Green
+231 254 255 #E7FEFF Bubbles
+0   255 255 #00FFFF Cyan
+8   232 222 #08E8DE Bright Turquoise
+48  213 200 #30D5C8 Turquoise
+0   139 139 #008080 Teal
+1   121 111 #01796F Pine Green
+0   139 139 #008B8B Dark Cyan
+47  79  79  #2F4F4F Dark Slate Gray
+//blue
+231 254 255 #E7FEFF Bubbles
+0   255 255 #00FFFF Cyan
+155 221 255 #9BDDFF Columbia Blue
+137 207 240 #89CFF0 Baby Blue
+135 206 235 #87CEEB Sky Blue
+174 198 207 #AEC6CF Pastel Blue
+0   139 139 #008B8B Dark Cyan
+0   123 167 #007BA7 Cerulean
+0   128 128 #008080 Teal
+47  79  79  #2F4F4F Dark Slate Gray
+119 221 119 #77DD77 Pastel Green
+240 248 255 #F0F8FF Alice Blue
+161 202 241 #A1CAF1 Baby Blue Eyes
+153 186 221 #99BADD Carolina Blue
+113 166 210 #71A6D2 Iceberg
+100 149 237 #6495ED Cornflower Blue
+119 158 203 #779ECB Dark Pastel Blue
+91  146 229 #5B92E5 United Nations Blue
+49  140 231 #318CE7 Bleu De France
+0   127 255 #007FFF Azure
+93  138 168 #5D8AA8 Air Force Blue
+96  130 182 #6082B6 Glaucous
+75  0   130 #4B0082 Indigo
+70  130 180 #4682B4 Steel Blue
+21  96  189 #1560BD Denim
+83  104 120 #536878 Cadet
+0   71  171 #0047AB Cobalt
+15  77  146 #0F4D92 Yale Blue
+8   69  126 #08457E Dark Cerulean
+54  69  79  #36454F Charcoal
+59  68  75  #3B444B Arsenic
+0   51  102 #003366 Dark Midnight Blue
+0   46  99  #002E63 Cool Black
+0   33  71  #002147 Oxford Blue
+248 248 255 #F8F8FF Ghost White
+204 204 255 #CCCCFF Lavender Blue
+196 195 208 #C4C3D0 Lavender Gray
+146 161 207 #92A1CF Ceil
+140 146 172 #8C92AC Cool Gray
+0   0   255 #0000FF Blue
+42  82  190 #2A52BE Cerulean Blue
+0   47  167 #002FA7 International Klein Blue
+0   51  153 #003399 Dark Powder Blue
+0   0   156 #00009C Duke Blue
+18  10  143 #120A8F Ultramarine
+0   0   139 #00008B Dark Blue
+0   0   128 #000080 Navy Blue
+25  25  112 #191970 Midnight Blue
+8   37  103 #082567 Sapphire
+0   35  102 #002366 Royal Blue
+191 148 228 #BF94E4 Bright Lavender
+181 126 220 #B57EDC Lavender
+150 111 214 #966FD6 Dark Pastel Purple
+143 0   255 #8F00FF Violet
+115 79  150 #734F96 Dark Lavender
+105 53  156 #69359C Purple Heart
+209 159 232 #D19FE8 Bright Ube
+255 0   255 #FF00FF Magenta
+179 158 181 #B39EB5 Pastel Purple
+148 0   211 #9400D3 Dark Violet
+139 0   139 #8B008B Dark Magenta
+//gray
+255 255 255 #FFFFFF White
+128 128 128 #808080 Gray
+220 220 220 #DCDCDC Gainsboro
+211 211 211 #D3D3D3 Light Gray
+192 192 192 #C0C0C0 Silver
+190 190 190 #BEBEBE Medium Gray
+152 152 152 #989898 Spanish Gray
+105 105 105 #696969 Dim Gray
+85  85  85  #555555 Davy's Gray
+52  52  52  #343434 Jet
+229 228 226 #E5E4E2 Platinum
+132 132 130 #848482 Battleship Grey
+0   0   0   #000000 Black
