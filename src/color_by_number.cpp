@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include <unordered_set>
 #include <cmath>
 #include <utility>
 #include "disjoint_set.hpp"
@@ -22,6 +21,12 @@ class Color
         bool operator==(const Color &c) const;
 };
 
+class ColorHash
+{
+    public:
+        size_t operator()(const Color &c) const;
+};
+
 class Pixel
 {
     public:
@@ -29,7 +34,6 @@ class Pixel
         int height, i, j, blockID;
         pair<int, int> bl, tl, tr, br;
         bool left = false, top = false, right = false, bottom = false;
-        bool isBorder = false;
         string domColor;
         Color *closestColor;
         Pixel();
@@ -48,7 +52,6 @@ class PixelHash
 class ColorVectors
 {
     public:
-        int totalColors = 0;
         vector<Color *> red, blue, green, gray;
         unordered_map<Pixel, Color *, PixelHash> uniquePixs;
         unordered_map<Pixel, Color *, PixelHash>::iterator mitr;
@@ -60,11 +63,11 @@ class ColorBlock
 {
     public:
         Disjoint_Set colorBlocks;
-        unordered_set<int> printedBlocks;
-        unordered_map<int, int> containsSet;
+        unordered_map<Color, int, ColorHash> colorIDs;
+        unordered_map<Color, int, ColorHash>::iterator mitr;
         void checkAdj(Pixel *pixel, const vector< vector<Pixel *> > &image);
         void printBlocks(vector< vector<Pixel *> > &image);
-        pair<float, float> findNumberXY(int setID, float x, float y, vector< vector<Pixel *> > &image);
+        pair<float, float> findNumberXY(int setID, vector< vector<Pixel *> > &image);
 };
 
 int findSimilarity(Pixel *pixel, Color *color);
@@ -86,8 +89,6 @@ int main(int argc, char** argv)
     image.resize(height);
     cb.colorBlocks.Initialize(width*height);
 
-    //cout << cb.colorBlocks.Get_Elements()->size() << '\n';
-    
     for(int i = 0; i < height; i++)
     {    
         image[i].resize(width);
@@ -100,7 +101,6 @@ int main(int argc, char** argv)
             pixel->height = height;
             pixel->i = i;
             pixel->j = j;
-            //cout << cb.colorBlocks.Find(defaultID) << '\n';
             pixel->blockID = defaultID;
             defaultID++;
             cb.checkAdj(pixel, image);
@@ -109,7 +109,7 @@ int main(int argc, char** argv)
     
     cb.printBlocks(image);
 
-    /*Color *print;
+    Color *print;
 
     cout << P3 << '\n' << width << ' ' << height << '\n' << intensity << '\n';
 
@@ -121,23 +121,7 @@ int main(int argc, char** argv)
             cout << print->R << ' ' << print->G << ' ' << print->B << ' ';
         }
         cout << '\n';
-    }*/
-
-    //cout << cv.totalColors << '\n';
-
-    //cout << cb.colorBlocks.Get_Set_Ids()->size() << '\n';
-
-    /*for(int i = 0; i < image.size(); i++)
-    {
-        for(int j = 0; j < image[i].size(); j++)
-        {
-            pixel = image[i][j];
-            cout << pixel->left << ' ' << pixel->top << ' ' << pixel->right << ' ' << pixel->bottom << '\n';
-            //cout << '(' << pixel->bl.first << ' ' << pixel->bl.second << ')' << ' ' << '(' << pixel->tl.first << ' ' << pixel->tl.second << ')' << ' ' << 
-              //      '(' << pixel->tr.first << ' ' << pixel->tr.second << ')' << ' ' << '(' << pixel->br.first << ' ' << pixel->br.second << ')' << ' ' << '\n';
-        }
-        cout << '\n';
-    }*/
+    }
 
     return 0;
 }
@@ -157,6 +141,17 @@ bool Color::operator==(const Color &c) const
         return true;
     else
         return false;
+}
+
+size_t ColorHash::operator()(const Color &c) const
+{
+    string r, g, b;
+
+    r = to_string(c.R);
+    g = to_string(c.G);
+    b = to_string(c.B);
+
+    return stoi(r + g + b);
 }
 
 Pixel::Pixel()
@@ -214,7 +209,6 @@ void Pixel::borderCalc(char side)
 {
     if(side == 'l')
     {
-        //cout << i << ' ' << j << " has left border\n";
         left = true;
         bl.first = j;
         bl.second = abs(i + 1 - height);
@@ -223,7 +217,6 @@ void Pixel::borderCalc(char side)
     }
     else if(side == 't')
     {
-        //cout << i << ' ' << j << " has top border\n";
         top = true;
         tl.first = j;
         tl.second = abs(i - height);
@@ -232,7 +225,6 @@ void Pixel::borderCalc(char side)
     }
     else if(side == 'r')
     {
-        //cout << i << ' ' << j << " has right border\n";
         right = true;
         tr.first = j + 1;
         tr.second = abs(i - height);
@@ -241,7 +233,6 @@ void Pixel::borderCalc(char side)
     }
     else if(side == 'b')
     {
-        //cout << i << ' ' << j << " has bottom border\n";
         bottom = true;
         bl.first = j;
         bl.second = abs(i + 1 - height);
@@ -430,7 +421,7 @@ void ColorVectors::closestColor(Pixel *pixel)
         }
     }
 
-    if(!pixel->closestColor->used) { pixel->closestColor->used = true; totalColors++; }
+    //if(!pixel->closestColor->used) { pixel->closestColor->used = true; totalColors++; }
     uniquePixs[*pixel] = pixel->closestColor;
 }
 
@@ -447,25 +438,17 @@ void ColorBlock::checkAdj(Pixel *pixel, const vector< vector<Pixel *> > &image)
         upID = colorBlocks.Find(image[i - 1][j]->blockID);
         if(image[i - 1][j]->closestColor == pixel->closestColor && upID != pixelID)
         {    
-            //cout << "pixelID was " << pixelID << '\n';
             pixelID = colorBlocks.Union(pixelID, upID);
-            //cout << "pixelID is now " << pixelID << '\n';
             updatedID = true;
         }
         else if(upID != pixelID)
         {
-            pixel->isBorder = true;
             pixel->borderCalc('t');
-            image[i - 1][j]->isBorder = true;
             image[i - 1][j]->borderCalc('b');
         }
     }
     else //is in top row
-    {
-        //cout << "top\n";
-        pixel->isBorder = true;
         pixel->borderCalc('t');
-    }
 
     if(j - 1 >= 0) //check left
     {
@@ -473,197 +456,182 @@ void ColorBlock::checkAdj(Pixel *pixel, const vector< vector<Pixel *> > &image)
         if(image[i][j - 1]->closestColor == pixel->closestColor && leftID != pixelID)
         {
             if(updatedID)
-            {
-                //cout << "leftID was " << leftID << '\n';
                 leftID = colorBlocks.Union(leftID, pixelID);
-                //cout << "leftID is now " << leftID << '\n';
-            }
             else
-            {
-                //cout << "pixelID is " << pixelID << '\n';
                 pixelID = colorBlocks.Union(pixelID, leftID);
-                //cout << "pixelID is now " << pixelID << '\n';
-            }
         }
         else if(leftID != pixelID)
         {
-            pixel->isBorder = true;
             pixel->borderCalc('l');
-            image[i][j - 1]->isBorder = true;
             image[i][j - 1]->borderCalc('r');
         }
     }
     else //is in leftmost column
-    {
-        //cout << "leftmost\n";
-        pixel->isBorder = true;
         pixel->borderCalc('l');
-    }
 
-    //cout << i + 1 << ' ' << image.size() << '\n';
     if(i + 1 > image.size() - 1) //is in bottom row
-    {
-        //cout << "bottom\n";
-        pixel->isBorder = true;
         pixel->borderCalc('b');
-    }
-    //cout << j + 1 << ' ' << image[i].size() << '\n';
+
     if(j + 1 > image[i].size() - 1) //is in right most column
-    {
-        //cout << "rightmost\n";
-        pixel->isBorder = true;
         pixel->borderCalc('r');
-    }
 }
 
 void ColorBlock::printBlocks(vector< vector<Pixel *> > &image)
 {
     ofstream fout;
-    Pixel *pixel;
+    Pixel *pixel, *leftPix, *topPix, *rightPix, *bottomPix;
+    const vector<int> *setIDs, *sizes;
     pair<pair<int, int>, pair<int, int>> startingEdge;
     pair<float, float> numberXY;
-    bool checkT, checkR, checkB, checkL;
-    int minX, minY, maxX, maxY;
-    int setID;
-    
+    bool checkT, checkR, checkB, checkL, printLabel;
+    int setID, printColorID, colorID = 1;
+
+    setIDs = colorBlocks.Get_Set_Ids();
+    sizes = colorBlocks.Get_Sizes();
     fout.open("jgraph.txt");
     fout << "newgraph\n";
 
-    for(int i = 0; i < image.size(); i++)
+    for(int i = 0; i < setIDs->size(); i++)
     {
-        for(int j = 0; j < image[i].size(); j++)
-        {
-            pixel = image[i][j];
-            setID = colorBlocks.Find(pixel->blockID);
-            if(pixel->isBorder && printedBlocks.find(setID) == printedBlocks.end())
-            {
-                if(pixel->bl.first >= 0)
-                {    
-                    minX = pixel->bl.first;
-                    minY = pixel->bl.second;
-                }   
-                if(pixel->tr.first >= 0)
-                {
-                    maxX = pixel->tr.first;
-                    maxY = pixel->tr.second;
-                }
-                
-                checkT = true;
-                checkR = false;
-                checkB = false;
-                checkL = false;
-                
-                printedBlocks.insert(colorBlocks.Find(pixel->blockID));
-                startingEdge.first = pixel->bl;
-                startingEdge.second = pixel->tl;
-                
-                fout << "newline poly pcfill 1 1 1 pts " << pixel->bl.first << ' ' << pixel->bl.second << ' ' << pixel->tl.first << ' ' << pixel->tl.second << ' ';
-                
-                while(1)
-                {
-                    if(pixel->bl.first >= 0)
-                    {
-                        if(pixel->bl.first < minX && pixel)
-                            minX = pixel->bl.first;
-                        if(pixel->bl.second < minY)
-                            minY = pixel->bl.second;
-                    }
-                    if(pixel->tr.first >= 0)   
-                    {
-                        if(pixel->tr.first > maxX)
-                            maxX = pixel->tr.first;
-                        if(pixel->tr.second > maxY)
-                            maxY = pixel->tr.second;
-                    }
+        setID = (*setIDs)[i];
+        
+        int pixeli, pixelj;
 
-                    if(checkT && pixel->top)
-                    {
-                        fout << pixel->tr.first << ' ' << pixel->tr.second << ' ';
-                        checkT = false; //where you were
-                        checkR = true;  //where you're going
-                    }
-                    else if(checkT)
-                    {
-                        checkT = false;
-                        checkL = true;
-                        pixel = image[pixel->i - 1][pixel->j];
-                        continue;
-                    }
-                    if(checkR && pixel->right)
-                    {
-                        fout << pixel->br.first << ' ' << pixel->br.second << ' ';
-                        checkR = false;
-                        checkB = true;
-                    }
-                    else if(checkR)
-                    {
-                        checkR = false;
-                        checkT = true;
-                        pixel = image[pixel->i][pixel->j + 1];
-                        continue;
-                    }
-                    if(checkB && pixel->bottom)
-                    {
-                        fout << pixel->bl.first << ' ' << pixel->bl.second << ' ';
-                        checkB = false;
-                        checkL = true;
-                    }
-                    else if(checkB)
-                    {
-                        checkB = false;
-                        checkR = true;
-                        pixel = image[pixel->i + 1][pixel->j];
-                        continue;
-                    }
-                    if(checkL && pixel->left)
-                    {
-                        if(pixel->bl == startingEdge.first && pixel->tl == startingEdge.second) break;
-                        fout << pixel->tl.first << ' ' << pixel->tl.second << ' ';
-                        checkL = false;
-                        checkT = true;
-                    }
-                    else if(checkL)
-                    {
-                        checkL = false;
-                        checkB = true;
-                        pixel = image[pixel->i][pixel->j - 1];
-                        continue;
-                    }
-                }
-                fout << "color 0 0 0\n";
-                numberXY = findNumberXY(setID, (minX + maxX) / 2.0, (minY + maxY) / 2.0, image);
-                //cout << minX << ' ' << maxX << ' ' << minY << ' ' << maxY << ' ' << numberXY.first << ' ' << numberXY.second << '\n';
-                fout << "newstring x " << numberXY.first << " y " << numberXY.second << " fontsize 9 : " << '1' << '\n';
+        pixeli = setID / image[0].size();
+        pixelj = setID % image[0].size();
+
+        pixel = image[pixeli][pixelj];
+
+        fout << "newline marktype none ";
+
+        mitr = colorIDs.find(*(pixel->closestColor));
+
+        if(mitr == colorIDs.end())
+        {
+            fout << "label : " << colorID << ' ' << pixel->closestColor->name <<  '\n';;
+            colorIDs[*(pixel->closestColor)] = colorID;
+            printColorID = colorID;
+            colorID++;
+        }
+        else
+            printColorID = mitr->second;
+    
+        checkT = true;
+        checkR = false;
+        checkB = false;
+        checkL = false;
+            
+        startingEdge.first = pixel->bl;
+        startingEdge.second = pixel->tl;
+            
+        fout << "pts " << pixel->bl.first << ' ' << pixel->bl.second << ' ' << pixel->tl.first << ' ' << pixel->tl.second << ' ';
+                
+        while(1)
+        {
+            if(checkT && pixel->top)
+            {
+                fout << pixel->tr.first << ' ' << pixel->tr.second << ' ';
+                checkT = false; //where you were
+                checkR = true;  //where you're going
+            }
+            else if(checkT)
+            {
+                checkT = false;
+                checkL = true;
+                pixel = image[pixel->i - 1][pixel->j];
+                continue;
+            }
+            if(checkR && pixel->right)
+            {
+                fout << pixel->br.first << ' ' << pixel->br.second << ' ';
+                checkR = false;
+                checkB = true;
+            }
+            else if(checkR)
+            {
+                checkR = false;
+                checkT = true;
+                pixel = image[pixel->i][pixel->j + 1];
+                continue;
+            }
+            if(checkB && pixel->bottom)
+            {
+                fout << pixel->bl.first << ' ' << pixel->bl.second << ' ';
+                checkB = false;
+                checkL = true;
+            }
+            else if(checkB)
+            {
+                checkB = false;
+                checkR = true;
+                pixel = image[pixel->i + 1][pixel->j];
+                continue;
+            }
+            if(checkL && pixel->left)
+            {
+                if(pixel->bl == startingEdge.first && pixel->tl == startingEdge.second) break;
+                fout << pixel->tl.first << ' ' << pixel->tl.second << ' ';
+                checkL = false;
+                checkT = true;
+            }
+            else if(checkL)
+            {
+                checkL = false;
+                checkB = true;
+                pixel = image[pixel->i][pixel->j - 1];
+                continue;
             }
         }
-    }
+        fout << "color 0 0 0\n";
 
+        mitr = colorIDs.find(*(pixel->closestColor));
+
+        numberXY = findNumberXY(setID, image);
+        fout << "newstring x " << numberXY.first << " y " << numberXY.second << " fontsize 8 : " << printColorID << '\n';
+    }
     fout.close();
 }
 
-pair<float, float> ColorBlock::findNumberXY(int setID, float x, float y, vector< vector<Pixel *> > &image)
+pair<float, float> ColorBlock::findNumberXY(int setID, vector< vector<Pixel *> > &image)
 {
     Pixel *pixel;
-    int i, j;
+    int pixeli, pixelj, minX, minY, maxX, maxY;
+    float x, y;
 
-    j = floor(x);
-    i = floor(abs(y - image.size()));
-    pixel = image[i][j];
+    pixeli = setID / image[0].size();
+    pixelj = setID % image[0].size();
+
+    pixel = image[pixeli][pixelj];
+    minX = pixel->tl.first;
+    maxX = pixel->tr.first;
+    minY = pixel->bl.second;
+    maxY = pixel->tl.second;
+
+    /*for(int j = pixelj + 1; j < image[pixeli].size(); j++)
+    {
+        pixel = image[pixeli][j];
+        if(colorBlocks.Find(pixel->blockID) == setID)
+            maxX = pixel->tr.first;
+        else
+            break;
+    }*/
     
-    cout << "x is " << x << " y is " << y << '\n';
-    cout << "i is " << i << " j is " << j << '\n';
-    cout << colorBlocks.Find(pixel->blockID) << ' ' << setID << '\n';
+    x = (minX + maxX) / 2.0;
 
-    if(floor(x) == x)
-        x += 0.5;
-    if(floor(y) == y)
-        y -= 0.5;
+    /*for(int i = pixeli + 1; i < image.size(); i++)
+    {
+        pixel = image[i][x];
+        if(colorBlocks.Find(pixel->blockID) == setID)
+            minY = pixel->bl.second;
+        else
+            break;
+    }*/
 
-    if(colorBlocks.Find(pixel->blockID) == setID)
-        return pair<float, float>(x, y);
-    else
-        return pair<float, float>(-1, -1);
+    y = (minY + maxY) / 2.0 - 0.15;
+    
+    return pair<float, float>(x, y);
 }
+
 int findSimilarity(Pixel *pixel, Color *color)
 {
     return abs(pixel->R - color->R) + abs(pixel->G - color->G) + abs(pixel->B - color->B);
