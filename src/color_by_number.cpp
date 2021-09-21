@@ -33,7 +33,7 @@ class Pixel
         int R, G, B;
         int height, i, j, blockID;
         pair<int, int> bl, tl, tr, br;
-        bool left = false, top = false, right = false, bottom = false;
+        bool left, top, right, bottom;
         string domColor;
         Color *closestColor;
         Pixel();
@@ -63,6 +63,7 @@ class ColorBlock
 {
     public:
         Disjoint_Set colorBlocks;
+        float fontsize;
         unordered_map<Color, int, ColorHash> colorIDs;
         unordered_map<Color, int, ColorHash>::iterator mitr;
         void checkAdj(Pixel *pixel, const vector< vector<Pixel *> > &image);
@@ -88,6 +89,7 @@ int main(int argc, char** argv)
 
     image.resize(height);
     cb.colorBlocks.Initialize(width*height);
+    cb.fontsize = atof(argv[2]);
 
     for(int i = 0; i < height; i++)
     {    
@@ -164,6 +166,11 @@ Pixel::Pixel()
     tr.second = -1;
     br.first = -1;
     br.second = -1;
+
+    left = false;
+    top = false;
+    right = false;
+    bottom = false;
 }
 
 bool Pixel::multiColor()
@@ -421,7 +428,6 @@ void ColorVectors::closestColor(Pixel *pixel)
         }
     }
 
-    //if(!pixel->closestColor->used) { pixel->closestColor->used = true; totalColors++; }
     uniquePixs[*pixel] = pixel->closestColor;
 }
 
@@ -480,22 +486,21 @@ void ColorBlock::printBlocks(vector< vector<Pixel *> > &image)
 {
     ofstream fout;
     Pixel *pixel, *leftPix, *topPix, *rightPix, *bottomPix;
-    const vector<int> *setIDs, *sizes;
+    const vector<int> *setIDs;
     pair<pair<int, int>, pair<int, int>> startingEdge;
     pair<float, float> numberXY;
     bool checkT, checkR, checkB, checkL, printLabel;
-    int setID, printColorID, colorID = 1;
+    int setID, printColorID, colorID, pixeli, pixelj, legendFont;
 
     setIDs = colorBlocks.Get_Set_Ids();
-    sizes = colorBlocks.Get_Sizes();
+    colorID = 1;
+
     fout.open("jgraph.txt");
-    fout << "newgraph\n";
+    fout << "newgraph xaxis nodraw yaxis nodraw\n";
 
     for(int i = 0; i < setIDs->size(); i++)
     {
         setID = (*setIDs)[i];
-        
-        int pixeli, pixelj;
 
         pixeli = setID / image[0].size();
         pixelj = setID % image[0].size();
@@ -584,11 +589,18 @@ void ColorBlock::printBlocks(vector< vector<Pixel *> > &image)
         }
         fout << "color 0 0 0\n";
 
-        mitr = colorIDs.find(*(pixel->closestColor));
-
         numberXY = findNumberXY(setID, image);
-        fout << "newstring x " << numberXY.first << " y " << numberXY.second << " fontsize 8 : " << printColorID << '\n';
+        fout << "newstring x " << numberXY.first << " y " << numberXY.second << " fontsize " << fontsize << " : " << printColorID << '\n';
     }
+    
+    if(colorID <= 50)
+        legendFont = 8;
+    else if(colorID > 50 && colorID <= 100)
+        legendFont = 6;
+    else
+        legendFont = 5;
+
+    fout << "legend defaults\nfontsize " << legendFont << " linelength 0.5\n";
     fout.close();
 }
 
@@ -607,25 +619,7 @@ pair<float, float> ColorBlock::findNumberXY(int setID, vector< vector<Pixel *> >
     minY = pixel->bl.second;
     maxY = pixel->tl.second;
 
-    /*for(int j = pixelj + 1; j < image[pixeli].size(); j++)
-    {
-        pixel = image[pixeli][j];
-        if(colorBlocks.Find(pixel->blockID) == setID)
-            maxX = pixel->tr.first;
-        else
-            break;
-    }*/
-    
     x = (minX + maxX) / 2.0;
-
-    /*for(int i = pixeli + 1; i < image.size(); i++)
-    {
-        pixel = image[i][x];
-        if(colorBlocks.Find(pixel->blockID) == setID)
-            minY = pixel->bl.second;
-        else
-            break;
-    }*/
 
     y = (minY + maxY) / 2.0 - 0.15;
     
