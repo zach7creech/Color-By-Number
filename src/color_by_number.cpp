@@ -4,93 +4,55 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include <cmath>
 #include <utility>
+#include <cmath>
 #include "disjoint_set.hpp"
+#include "color_by_number.hpp"
 
 using namespace std;
 using namespace plank;
 
-class Color
+int main(int argc, char **argv)
 {
-    public:
-        int R, G, B;
-        string hex, name;
-        bool used;
-        Color(int r=0, int g=0, int b=0, string hex="", string name="");
-        bool operator==(const Color &c) const;
-};
+    if(argc < 3)
+    {
+        cerr << "usage: ./bin/color-by-number <color> <fontsize> <options>\n";
+        return -1;
+    }
 
-class ColorHash
-{
-    public:
-        size_t operator()(const Color &c) const;
-};
+    ColorByNumber cbn(argc, argv);
 
-class Pixel
-{
-    public:
-        int R, G, B;
-        int height, i, j, blockID;
-        pair<int, int> bl, tl, tr, br;
-        bool left, top, right, bottom;
-        string domColor;
-        Color *closestColor;
-        Pixel();
-        bool multiColor();
-        void findDominant();
-        void borderCalc(char side);
-        bool operator==(const Pixel &p) const;
-};
+    return 0;
+}
 
-class PixelHash
-{
-    public:
-        size_t operator()(const Pixel &p) const;
-};
-
-class ColorVectors
-{
-    public:
-        vector<Color *> red, blue, green, gray;
-        unordered_map<Pixel, Color *, PixelHash> uniquePixs;
-        unordered_map<Pixel, Color *, PixelHash>::iterator mitr;
-        void readColors(string option);
-        void closestColor(Pixel *pixel);
-};
-
-class ColorBlock
-{
-    public:
-        Disjoint_Set colorBlocks;
-        float fontsize;
-        unordered_map<Color, int, ColorHash> colorIDs;
-        unordered_map<Color, int, ColorHash>::iterator mitr;
-        void checkAdj(Pixel *pixel, const vector< vector<Pixel *> > &image);
-        void printBlocks(vector< vector<Pixel *> > &image);
-        pair<float, float> findNumberXY(int setID, vector< vector<Pixel *> > &image);
-};
-
-int findSimilarity(Pixel *pixel, Color *color);
-
-int main(int argc, char** argv)
+ColorByNumber::ColorByNumber(int argc, char **argv)
 {  
-    ColorVectors cv;
-    ColorBlock cb;
-    vector< vector<Pixel *> > image;
-    string P3;
-    int width, height, intensity;
-    int defaultID = 0;
+    ofstream fout;
+    int defaultID;
+    string colorOption, title;
     Pixel *pixel;
+    Color *print;
 
-    cv.readColors(argv[1]);
+    for(int i = 3; i < argc; i++)
+    {
+        title = argv[i];
+        if(title == "title" && i + 1 < argc)
+            title = argv[i + 1];
+        options.insert(argv[i]);
+    }
+
+    colorOption = argv[1];
+    options.insert(colorOption);
+    cv.readColors(colorOption);
 
     cin >> P3 >> width >> height >> intensity;
 
     image.resize(height);
     cb.colorBlocks.Initialize(width*height);
     cb.fontsize = atof(argv[2]);
+    cb.title = title;
 
+    defaultID = 0;
     for(int i = 0; i < height; i++)
     {    
         image[i].resize(width);
@@ -98,7 +60,7 @@ int main(int argc, char** argv)
         {
             pixel = new Pixel;
             cin >> pixel->R >> pixel->G >> pixel->B;
-            cv.closestColor(pixel);
+            cv.closestColor(pixel, colorOption);
             image[i][j] = pixel;
             pixel->height = height;
             pixel->i = i;
@@ -109,23 +71,46 @@ int main(int argc, char** argv)
         }
     }
     
-    cb.printBlocks(image);
+    cb.printBlocks(image, options);
 
-    Color *print;
-
-    cout << P3 << '\n' << width << ' ' << height << '\n' << intensity << '\n';
-
-    for(int i = 0; i < height; i++)
+    if(options.find("print_ppm") != options.end())
     {
-        for(int j = 0; j < width; j++)
-        {
-            print = image[i][j]->closestColor;
-            cout << print->R << ' ' << print->G << ' ' << print->B << ' ';
-        }
-        cout << '\n';
-    }
+        fout.open("output.ppm");
 
-    return 0;
+        fout << P3 << '\n' << width << ' ' << height << '\n' << intensity << '\n';
+
+        for(int i = 0; i < height; i++)
+        {
+            for(int j = 0; j < width; j++)
+            {
+                print = image[i][j]->closestColor;
+                fout << print->R << ' ' << print->G << ' ' << print->B << ' ';
+            }
+            fout << '\n';
+        }
+        fout.close();
+    }
+}
+
+ColorByNumber::~ColorByNumber()
+{
+    for(int i = 0; i < image.size(); i++)
+    {
+        for(int j = 0; j < image[i].size(); j++)
+            delete image[i][j];
+    }
+}
+
+void Color::toHex()
+{
+    char hexName[8];
+
+    snprintf(hexName, sizeof hexName, "#%02x%02x%02x", R, G, B);
+    
+    for(int i = 0; i < strlen(hexName); i++)
+        hexName[i] = toupper(hexName[i]);
+    
+    name = hexName; 
 }
 
 Color::Color(int r, int g, int b, string hex, string name)
@@ -267,15 +252,16 @@ size_t PixelHash::operator()(const Pixel &p) const
     return stoi(r + g + b);
 }
 
-void ColorVectors::readColors(string option)
+void ColorVectors::readColors(string colorOption)
 {
     ifstream fin;
     stringstream ss;
     Color *color;
     string line;
+    int count, rd, gbd;
     char category;
 
-    if(option == "ROYGBIV")
+    if(colorOption == "ROYGBIV")
     {
         //red
         color = new Color(255, 0, 0, "#FF0000", "Red");
@@ -306,9 +292,30 @@ void ColorVectors::readColors(string option)
         color = new Color(255, 255, 255, "#FFFFFF", "White");
         gray.push_back(color);
     }
-    else
+    else if(colorOption != "extreme")
     {
-        int count = 0;
+        count = 0;
+
+        if(colorOption == "robust")
+        {
+            rd = 1;
+            gbd = 1;
+        }
+        else if(colorOption == "simpler")
+        {
+            rd = 3;
+            gbd = 2;
+        }
+        else if(colorOption == "dull")
+        {
+            rd = 4;
+            gbd = 3;
+        }
+        else if(colorOption == "flat")
+        {
+            rd = 5;
+            gbd = 4;
+        }
 
         fin.open("color/robust");
 
@@ -335,12 +342,17 @@ void ColorVectors::readColors(string option)
                 continue;
             }
 
-            if(option == "simple" && count % 5 != 0)
+            if(category == 'R' && count % rd != 0)
             {
                 count++;
                 continue;
             }
-
+            else if((category == 'G' || category == 'B') && count % gbd != 0)
+            {
+                count++;
+                continue;
+            }
+        
             ss.clear();
             ss.str(line);
             color = new Color;
@@ -358,20 +370,38 @@ void ColorVectors::readColors(string option)
                 gray.push_back(color);
             count++;
         }
+        fin.close();
     }
-
-    fin.close();
 }
 
-void ColorVectors::closestColor(Pixel *pixel)
+void ColorVectors::closestColor(Pixel *pixel, string colorOption)
 {
+    Color *color;
+    unordered_map<Pixel, Color *, PixelHash>::iterator mitr;
     int lowestDiff, thisDiff;
 
     lowestDiff = 766; //biggest possible difference (255 + 255 + 255 + 1)
 
-    pixel->findDominant();
-
     mitr = uniquePixs.find(*pixel);
+
+    if(colorOption == "extreme" && mitr == uniquePixs.end())
+    {
+        color = new Color;
+        color->R = pixel->R;
+        color->G = pixel->G;
+        color->B = pixel->B;
+        color->toHex();
+        pixel->closestColor = color;
+        uniquePixs[*pixel] = color;
+        return;
+    }
+    else if(colorOption == "extreme")
+    {
+        pixel->closestColor = mitr->second;
+        return;
+    }
+
+    pixel->findDominant();
     
     if(mitr != uniquePixs.end())
     {
@@ -431,6 +461,23 @@ void ColorVectors::closestColor(Pixel *pixel)
     uniquePixs[*pixel] = pixel->closestColor;
 }
 
+int ColorVectors::findSimilarity(Pixel *pixel, Color *color)
+{
+    return abs(pixel->R - color->R) + abs(pixel->G - color->G) + abs(pixel->B - color->B);
+}
+
+ColorVectors::~ColorVectors()
+{
+    for(int i = 0; i < red.size(); i++)
+        delete red[i];
+    for(int i = 0; i < green.size(); i++)
+        delete green[i];
+    for(int i = 0; i < blue.size(); i++)
+        delete blue[i];
+    for(int i = 0; i < gray.size(); i++)
+        delete gray[i];
+}
+
 void ColorBlock::checkAdj(Pixel *pixel, const vector< vector<Pixel *> > &image)
 {
     int pixelID, upID, leftID;
@@ -482,21 +529,40 @@ void ColorBlock::checkAdj(Pixel *pixel, const vector< vector<Pixel *> > &image)
         pixel->borderCalc('r');
 }
 
-void ColorBlock::printBlocks(vector< vector<Pixel *> > &image)
+void ColorBlock::printBlocks(vector< vector<Pixel *> > &image, unordered_set<string> &options)
 {
     ofstream fout;
+    unordered_map<Color, int, ColorHash>::iterator mitr; 
     Pixel *pixel, *leftPix, *topPix, *rightPix, *bottomPix;
     const vector<int> *setIDs;
     pair<pair<int, int>, pair<int, int>> startingEdge;
     pair<float, float> numberXY;
     bool checkT, checkR, checkB, checkL, printLabel;
     int setID, printColorID, colorID, pixeli, pixelj, legendFont;
+    float scale;
 
     setIDs = colorBlocks.Get_Set_Ids();
     colorID = 1;
 
     fout.open("jgraph.txt");
-    fout << "newgraph xaxis nodraw yaxis nodraw\n";
+    fout << "newgraph";
+
+    if(image[0].size() > image.size())
+    {
+        scale = image[0].size() * 1.0 / image.size();
+        fout << " xaxis size " << 6 * scale << " yaxis size 6\n";
+    }
+    else
+    {
+        scale = image.size() * 1.0 / image[0].size();
+        fout << " xaxis size 6 yaxis size " << 6 * scale << '\n';
+    }
+
+    if(options.find("show_axis") == options.end())
+        fout << "xaxis nodraw yaxis nodraw\n";
+
+    if(options.find("title") != options.end())
+        fout << "title : " << title << '\n';
 
     for(int i = 0; i < setIDs->size(); i++)
     {
@@ -513,7 +579,11 @@ void ColorBlock::printBlocks(vector< vector<Pixel *> > &image)
 
         if(mitr == colorIDs.end())
         {
-            fout << "label : " << colorID << ' ' << pixel->closestColor->name <<  '\n';;
+            fout << "label : " << colorID << ' ' << pixel->closestColor->name;
+            if(options.find("print_hex") != options.end() || options.find("extreme") != options.end())
+                fout << ' ' << pixel->closestColor->hex << '\n';
+            else
+                fout << '\n';
             colorIDs[*(pixel->closestColor)] = colorID;
             printColorID = colorID;
             colorID++;
@@ -594,11 +664,15 @@ void ColorBlock::printBlocks(vector< vector<Pixel *> > &image)
     }
     
     if(colorID <= 50)
-        legendFont = 8;
+        legendFont = 10;
     else if(colorID > 50 && colorID <= 100)
         legendFont = 6;
+    else if(colorID > 100 && colorID <= 130)
+        legendFont = 4;
+    else if(colorID > 130 && colorID <= 180)
+        legendFont = 2;
     else
-        legendFont = 5;
+        legendFont = 1;
 
     fout << "legend defaults\nfontsize " << legendFont << " linelength 0.5\n";
     fout.close();
@@ -624,9 +698,4 @@ pair<float, float> ColorBlock::findNumberXY(int setID, vector< vector<Pixel *> >
     y = (minY + maxY) / 2.0 - 0.15;
     
     return pair<float, float>(x, y);
-}
-
-int findSimilarity(Pixel *pixel, Color *color)
-{
-    return abs(pixel->R - color->R) + abs(pixel->G - color->G) + abs(pixel->B - color->B);
 }

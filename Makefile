@@ -14,7 +14,7 @@ clean:
 obj/disjoint_set.o: src/disjoint_set.cpp include/disjoint_set.hpp
 	$(CC) $(INCLUDE) $(CFLAGS) -c -o obj/disjoint_set.o src/disjoint_set.cpp
 
-obj/color_by_number.o: src/color_by_number.cpp include/disjoint_set.hpp
+obj/color_by_number.o: src/color_by_number.cpp include/disjoint_set.hpp include/color_by_number.hpp
 	$(CC) $(INCLUDE) $(CFLAGS) -c -o obj/color_by_number.o src/color_by_number.cpp
 
 bin/color_by_number: obj/color_by_number.o obj/disjoint_set.o
