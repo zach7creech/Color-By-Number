@@ -46,6 +46,9 @@ fi
 if [ "$total" -lt 1000 ]
 then
     fontsize=14
+elif [ "$total" -lt 2000 ]
+then
+    fontsize=10
 fi
 
 if [ $total -gt $divisor ]
