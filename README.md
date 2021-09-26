@@ -38,5 +38,12 @@ The executable can be run from the main directory like this: `./bin/color-by-num
 
 You will also have to run `jgraph -P jgraph.txt | ps2pdf - output.pdf` to create the color-by-number image.
 
+### Customize color/robust
+
+You can add and remove colors from the color file to further customize your color-by-number game. If you would like to add a color follow these steps:
+* Determine what the "dominant" color is. Whatever color, R, G, or B has the largest value, place your new color in that section denoted by heading `//color`. If the largest value is in more than one section, place your color under both headings. If your color is a shade of gray, place it under the `//gray` heading.
+* The line describing your color must be formatted exactly like this: `R G B #hexcode name`. Please make sure to include the "#". The name can be any length, separated by spaces.
+
 #### Contact me
+
 I tried my best to create defaults that work with many images. However, images have many different formats, color patterns, and resolutions, so I couldn't get everything perfect. If you encounter any bugs, or if the formatting of the output is not correct or looks silly, please contact me at zcreech@vols.utk.edu.
