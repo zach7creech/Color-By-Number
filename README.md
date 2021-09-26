@@ -30,7 +30,9 @@ sh color-by-number.sh <input-image> <output-name> <color> <size> <landscape> <op
 
 ### Use the executable directly
 
-If you'd like to use the executable directly, you have to do a couple things first. First, you should convert your image into a size that is more appropriate for the program. See the `size` command for recommendations. Second, make sure that your image is converted to the P3 .ppm format. P6 is the other most common one, and it will not work.
+If you'd like to use the executable directly, you have to do a couple things first. First, you should convert your image into a size that is more appropriate for the program. See the `size` command for recommendations. Second, make sure that your image is converted to the P3 .ppm format. P6 is the other most common one, and it will not work. 
+
+Also, be wary of comments in the converted .ppm file. The program doesn't check for comments, and they will crash it. I recommend using the command I used in the shell script to remove comments: `sed -i '/^#/d'`
 
 The executable can be run from the main directory like this: `./bin/color-by-number <size> <fontsize> <options> < input.ppm`
 
