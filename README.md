@@ -1,5 +1,5 @@
 # Color-By-Number
-Color-By-Number is a program that utilizes Dr. James Plank's graphing utility jgraph to convert images into color-by-number games.
+Color-By-Number is a program that utilizes Dr. James Plank's graphing utility jgraph to convert images into color-by-number games. It works best with digital art, but it works reasonably well even with real-life photos.
 
 ## Using Color-By-Number
 Installing ImageMagick is recommended. I haven't tested how `convert` and its options like `-resize` work without it.
