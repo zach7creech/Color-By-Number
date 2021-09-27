@@ -3,8 +3,12 @@ Color-By-Number is a program that utilizes Dr. James Plank's graphing utility jg
 
 ## Two examples
 
-![Original](README/mountain.jpg) ![Approximated ppm](README/mountain.ppm) ![CBN](README/mountain.pdf)
-![Original](README/megumin.jpg) ![Approximated ppm](README/megumin.ppm) ![CBN](README/megumin.pdf)
+![Original](README/mountain.jpg) 
+![Approximated ppm](README/mountain.ppm) 
+![CBN](README/mountain.pdf)
+![Original](README/megumin.jpg) 
+![Approximated ppm](README/megumin.ppm) 
+![CBN](README/megumin.pdf)
 
 ## Using Color-By-Number
 Installing ImageMagick is recommended. I haven't tested how `convert` and its options like `-resize` work without it.
