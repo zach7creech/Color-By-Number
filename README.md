@@ -1,6 +1,11 @@
 # Color-By-Number
 Color-By-Number is a program that utilizes Dr. James Plank's graphing utility jgraph to convert images into color-by-number games. It works best with digital art, but it works reasonably well even with real-life photos.
 
+## Two examples
+
+![Original](README/mountain.jpg) ![Approximated ppm](README/mountain.ppm) ![CBN](README/mountain.pdf)
+![Original](README/megumin.jpg) ![Approximated ppm](README/megumin.ppm) ![CBN](README/megumin.pdf)
+
 ## Using Color-By-Number
 Installing ImageMagick is recommended. I haven't tested how `convert` and its options like `-resize` work without it.
 ImageMagick can be installed on Linux operating systems with `sudo apt install imagemagick`.
