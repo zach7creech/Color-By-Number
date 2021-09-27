@@ -3,18 +3,14 @@ Color-By-Number is a program that utilizes Dr. James Plank's graphing utility jg
 
 ## Two examples
 
+Images ordered by: Original, approximated ppm, and output color-by-number
+
 ![mountain.jpg](README/mountain.jpg) 
-Original
 ![mountain_ppm.jpg](README/mountain_ppm.jpg)
-Approximated ppm
 ![output-mountain.jpg](README/output-mountain.jpg)
-Color-by-number
 ![megumin.jpg](README/megumin.jpg)
-Original
 ![megumin_ppm.jpg](README/megumin_ppm.jpg)
-Approximated ppm
 ![output-megumin.jpg](README/output-megumin.jpg)
-Color-by-number
 
 The numbers are a bit blurry in these jpgs, but I had to use jpg rather than pdf due to GitHub's markdown capabilities.
 
